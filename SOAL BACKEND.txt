@@ -1,0 +1,101 @@
+-- Membuat tabel users
+CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name VARCHAR(255),
+  gender CHAR(1),
+  status VARCHAR(50)
+);
+
+-- Memasukkan data ke dalam tabel users
+INSERT INTO users (id, name, gender, status) VALUES
+(1, 'Frasch', 'F', 'active'),
+(2, 'Garmuth', 'M', 'active'),
+(3, 'Goliath', 'M', 'active'),
+(4, 'Luna', 'F', 'active'),
+(5, 'Zeus', 'M', 'active'),
+(6, 'Aphrodite', 'F', 'active'),
+(7, 'Ares', 'M', 'active'),
+(8, 'Lina', 'F', 'active'),
+(9, 'Lanaya', 'F', 'active'),
+(10, 'Hades', 'M', 'active');
+
+-- Membuat tabel hobbies
+CREATE TABLE hobbies (
+  id INT PRIMARY KEY,
+  name VARCHAR(255),
+  level INT
+);
+
+-- Memasukkan data ke dalam tabel hobbies
+INSERT INTO hobbies (id, name, level) VALUES
+(1, 'Running', 8),
+(2, 'Skipping', 5),
+(3, 'Push Up', 10);
+
+-- Membuat tabel map_user_hobby
+CREATE TABLE map_user_hobby (
+  id INT PRIMARY KEY,
+  id_user INT,
+  id_hobby INT,
+  status VARCHAR(50)
+);
+
+-- Memasukkan data ke dalam tabel map_user_hobby
+INSERT INTO map_user_hobby (id, id_user, id_hobby, status) VALUES
+(1, 1, 1, 'active'),
+(2, 3, 1, 'active'),
+(3, 8, 3, 'deleted'),
+(4, 2, 2, 'active'),
+(5, 4, 1, 'deleted'),
+(6, 6, 2, 'active'),
+(7, 5, 3, 'active'),
+(8, 8, 1, 'active'),
+(9, 7, 2, 'active'),
+(10, 4, 2, 'active'),
+(11, 9, 3, 'deleted'),
+(12, 10, 2, 'deleted'),
+(13, 3, 2, 'active'),
+(14, 2, 3, 'active'),
+(15, 10, 2, 'active');
+
+-- NOMOR 1 :
+
+-- Membuat indeks pada kolom id di tabel users
+CREATE INDEX idx_users_id ON users (id);
+
+-- Membuat indeks pada kolom id di tabel hobbies
+CREATE INDEX idx_hobbies_id ON hobbies (id);
+
+-- Membuat indeks pada kolom id di tabel map_user_hobby
+CREATE INDEX idx_map_user_hobby_id ON map_user_hobby (id);
+
+-- Membuat indeks pada kolom id_user di tabel map_user_hobby
+CREATE INDEX idx_map_user_hobby_id_user ON map_user_hobby (id_user);
+
+-- Membuat indeks pada kolom id_hobby di tabel map_user_hobby
+CREATE INDEX idx_map_user_hobby_id_hobby ON map_user_hobby (id_hobby);
+
+-- NOMOR 2
+SELECT u.gender, COUNT(*) AS total
+FROM users u
+JOIN map_user_hobby muh ON u.id = muh.id_user
+JOIN hobbies h ON muh.id_hobby = h.id
+WHERE h.name = 'Skipping'
+GROUP BY u.gender;
+
+-- NOMOR 3
+
+SELECT u.name AS name_user, COUNT(*) AS total
+FROM users u
+JOIN map_user_hobby muh ON u.id = muh.id_user
+WHERE u.status = 'active' AND muh.status = 'active'
+GROUP BY u.name;
+
+-- NOMOR 4
+SELECT u.name, AVG(h.level) AS level_avg
+FROM users u
+JOIN map_user_hobby muh ON u.id = muh.id_user
+JOIN hobbies h ON muh.id_hobby = h.id
+GROUP BY u.id, u.name
+HAVING COUNT(muh.id_hobby) > 1;
+
